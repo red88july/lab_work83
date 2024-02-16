@@ -1,4 +1,5 @@
 import {Model} from "mongoose";
+import User from "./models/User";
 
 export interface UserTypes {
     username: string;
@@ -10,7 +11,12 @@ export interface UserTypesExtend extends UserTypes {
 }
 
 interface UserMethods {
+    checkPassword(password: string): Promise<Boolean>
     generatedToken(): void;
 }
 
-type UserModel = Model<UserTypesExtend, unknown, UserMethods>;
+type UserModel = Model<UserTypesExtend, {}, UserMethods>;
+
+export interface UserTypesSession {
+    user: User;
+}
