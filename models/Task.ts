@@ -1,14 +1,14 @@
-import mongoose from 'mongoose';
+import {Schema, Types, model} from 'mongoose';
 import User from "./User";
 
-const TaskSchema = new mongoose.Schema({
+const TaskSchema = new Schema({
 
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
         validate: {
-            validator: async (value: mongoose.Types.ObjectId) => {
+            validator: async (value: Types.ObjectId) => {
                 const user = await User.findById(value);
                 return Boolean(user);
             },
@@ -31,6 +31,6 @@ const TaskSchema = new mongoose.Schema({
 
 });
 
-const Task = mongoose.model('Task', TaskSchema);
+const Task = model('Task', TaskSchema);
 
 export default Task;
