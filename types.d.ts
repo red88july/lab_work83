@@ -1,5 +1,4 @@
 import {Model} from "mongoose";
-import User from "./models/User";
 
 export interface UserTypes {
     username: string;
@@ -16,7 +15,3 @@ interface UserMethods {
 }
 
 type UserModel = Model<UserTypesExtend, {}, UserMethods>;
-
-export interface UserTypesSession {
-    user: User;
-}

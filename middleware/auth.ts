@@ -26,8 +26,10 @@ const auth = async (req: RequestUser, res: Response, next: NextFunction) => {
   if (!user) {
     return res.status(400).send({ error: 'Wrong token!' });
   }
-
+  
   req.user = user;
+
+
   next();
 };
 

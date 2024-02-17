@@ -16,10 +16,9 @@ tasksRouter.post('/', auth, async (req:RequestUser, res, next) => {
             description: req.body.description,
             status: req.body.status,
         }
-
         const tasksUser = new Task(taskData);
-        await tasksUser.save();
 
+        await tasksUser.save();
         res.send(tasksUser);
 
     } catch (e) {
@@ -30,15 +29,23 @@ tasksRouter.post('/', auth, async (req:RequestUser, res, next) => {
     }
 });
 
-tasksRouter.get('/', async (req, res, next) => {
+tasksRouter.get('/', auth, async (req:RequestUser, res, next) => {
     try {
+
+        if (!req.user) {
+            return res.status(401).send({ error: 'Unauthorized user' });
+        }
+
+        const tasks = await Task.find({ user: req.user._id });
+
+        res.send(tasks);
 
     } catch (e) {
         next(e);
     }
 });
 
-tasksRouter.put('/:id', async (req, res, next) => {
+tasksRouter.put('/:id', async (req,  res, next) => {
     try {
 
     } catch (e) {

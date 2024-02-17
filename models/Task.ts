@@ -1,4 +1,4 @@
-import {Schema, Types, model} from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 import User from "./User";
 
 const TaskSchema = new Schema({
@@ -27,9 +27,9 @@ const TaskSchema = new Schema({
         type: String,
         enum: ['new', 'in_progress', 'complete'],
         default: 'new',
-    }
-
+    },
 });
+
 
 const Task = model('Task', TaskSchema);
 
