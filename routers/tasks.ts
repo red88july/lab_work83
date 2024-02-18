@@ -21,6 +21,7 @@ tasksRouter.post('/', auth, async (req:RequestUser, res, next) => {
             description: req.body.description,
             status: req.body.status,
         }
+
         const tasksUser = new Task(taskData);
 
         await tasksUser.save();
@@ -37,11 +38,10 @@ tasksRouter.post('/', auth, async (req:RequestUser, res, next) => {
 tasksRouter.get('/', auth, async (req:RequestUser, res, next) => {
 
     try {
-        if (!req.user) {
-            return res.status(401).send({ error: 'Unauthorized user' });
-        }
 
-        const tasks = await Task.findOne({ user: req.user._id });
+        let authByUser = req.user?._id;
+
+        const tasks = await Task.find({ user: authByUser });
 
         res.send(tasks);
 
@@ -84,15 +84,33 @@ tasksRouter.put('/:id', auth, async (req: RequestUser, res, next) => {
 
         const updatedTask = await Task.findByIdAndUpdate(_id, update,{ new: true });
 
-        return res.send(updatedTask);
+        return res.send({message: 'Task was updated!', updatedTask});
     } catch (e) {
         next(e);
     }
 });
 
 
-tasksRouter.delete('/:id', async (req, res, next) => {
+tasksRouter.delete('/:id', auth, async (req: RequestUser, res, next) => {
     try {
+
+        let authByUser = req.user?._id.toString()
+
+        const task = await Task.findById(req.params.id);
+
+        if (!task) {
+            return res.status(404).send({ error: 'Task not found!' });
+        }
+
+        let taskOfUser = task.user.toString();
+
+        if (taskOfUser !== authByUser) {
+            return res.status(403).send({ error: 'You cannot delete this task.' });
+        }
+
+        const deleteTask = await Task.findByIdAndDelete(req.params.id);
+
+        res.send({ message: 'Task deleted successfully.', deleteTask });
 
     } catch (e) {
         next(e);
