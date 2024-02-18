@@ -1,4 +1,4 @@
-import {Model} from "mongoose";
+import { Model } from "mongoose";
 
 export interface UserTypes {
     username: string;
@@ -15,3 +15,12 @@ interface UserMethods {
 }
 
 type UserModel = Model<UserTypesExtend, {}, UserMethods>;
+
+export interface TasksDataTypes {
+    user: UserTypesExtend;
+    title: string;
+    description: string;
+    status: string;
+}
+
+export type TasksDataUpd = Omit<TasksDataTypes, 'user'>

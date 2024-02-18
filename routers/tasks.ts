@@ -1,8 +1,9 @@
-import mongoose from "mongoose";
+import mongoose, {Types} from "mongoose";
 import { Router } from 'express';
 
 import auth, { RequestUser } from "../middleware/auth";
 import Task from "../models/Task";
+import { TasksDataTypes, TasksDataUpd } from "../types";
 
 export const tasksRouter = Router();
 
@@ -10,7 +11,11 @@ tasksRouter.post('/', auth, async (req:RequestUser, res, next) => {
 
     try {
 
-        const taskData = {
+        if (!req.user) {
+            return res.status(401).send({error: 'Unauthorized user'});
+        }
+
+        const taskData: TasksDataTypes = {
             user: req.user,
             title: req.body.title,
             description: req.body.description,
@@ -30,28 +35,61 @@ tasksRouter.post('/', auth, async (req:RequestUser, res, next) => {
 });
 
 tasksRouter.get('/', auth, async (req:RequestUser, res, next) => {
-    try {
 
+    try {
         if (!req.user) {
             return res.status(401).send({ error: 'Unauthorized user' });
         }
 
-        const tasks = await Task.find({ user: req.user._id });
+        const tasks = await Task.findOne({ user: req.user._id });
 
         res.send(tasks);
 
     } catch (e) {
         next(e);
     }
+
 });
 
-tasksRouter.put('/:id', async (req,  res, next) => {
+tasksRouter.put('/:id', auth, async (req: RequestUser, res, next) => {
     try {
 
+        let authByUser = req.user?._id.toString()
+
+        let _id: Types.ObjectId;
+
+        try {
+            _id = new Types.ObjectId(req.params.id);
+        } catch (e) {
+            return res.status(404).send({ error: 'Wrong ObjectId' });
+        }
+
+        const task = await Task.findById(_id);
+
+        if (!task) {
+            return res.status(404).send({ error: 'Task not found!' });
+        }
+
+        let taskOfUser = task.user.toString();
+
+        if (taskOfUser !== authByUser) {
+            return res.status(403).send({ error: 'You cannot edit this task!' });
+        }
+
+        const update: TasksDataUpd = {
+            title: req.body.title,
+            description: req.body.description,
+            status: req.body.status,
+        }
+
+        const updatedTask = await Task.findByIdAndUpdate(_id, update,{ new: true });
+
+        return res.send(updatedTask);
     } catch (e) {
         next(e);
     }
 });
+
 
 tasksRouter.delete('/:id', async (req, res, next) => {
     try {
