@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
-import {Schema, model} from "mongoose";
-import {randomUUID} from "crypto";
+import { Schema, model } from "mongoose";
+import { randomUUID } from "crypto";
 
-import {UserMethods, UserModel, UserTypesExtend} from "../types";
+import { UserMethods, UserModel, UserTypesExtend } from "../types";
 
 const SALT = 11;
 

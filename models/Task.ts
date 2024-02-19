@@ -1,4 +1,5 @@
 import { Schema, Types, model } from 'mongoose';
+
 import User from "./User";
 
 const TaskSchema = new Schema({
@@ -28,8 +29,7 @@ const TaskSchema = new Schema({
         enum: ['new', 'in_progress', 'complete'],
         default: 'new',
     },
-});
-
+}, { versionKey: false });
 
 const Task = model('Task', TaskSchema);
 

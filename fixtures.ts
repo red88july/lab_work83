@@ -6,65 +6,72 @@ import User from './models/User';
 import Task from "./models/Task";
 
 const dropCollection = async (db: mongoose.Connection, collectionsName: string) => {
-  try {
-    await db.dropCollection(collectionsName);
-  } catch (e) {
-    console.log(`Collection ${collectionsName} was missing, skipping drop...`)
-  }
+
+    try {
+        await db.dropCollection(collectionsName);
+    } catch (e) {
+        console.log(`Collection ${collectionsName} was missing, skipping drop...`)
+    }
+
 };
 
-const run  = async  () => {
-  await mongoose.connect(connectDb.db);
-  const db = mongoose.connection;
+const run = async () => {
 
-  const collections = ['users', 'tasks'];
+    await mongoose.connect(connectDb.db);
+    const db = mongoose.connection;
 
-  for (const collectionsName of collections) {
-   await dropCollection(db, collectionsName);
-  }
+    const collections = ['users', 'tasks'];
 
-  const generatedToken = randomUUID();
+    for (const collectionsName of collections) {
+        await dropCollection(db, collectionsName);
+    }
 
-  const users = await User.create([
-    {
-      username: 'Ivanov',
-      password: 'Ivanov_123#',
-      token: generatedToken,
-    },
-    {
-      username: 'Petrov',
-      password: 'Petrov_123#',
-      token: generatedToken,
-    },
-    {
-      username: 'Sidorov',
-      password: 'Sidorov_123#',
-      token: generatedToken,
-    },
-  ]);
+    const generatedTokenIvanov = randomUUID();
+    const generatedTokenPetrov = randomUUID();
+    const generatedTokenSidorov = randomUUID();
 
-  await Task.create([
-    {
-      user: users[0]._id,
-      title: 'First project on JS',
-      description: 'Write first line code',
-      status: 'new',
-    },
-    {
-      user: users[1]._id,
-      title: 'BUG on Project',
-      description: 'First BUG try to solve',
-      status: 'in_progress',
-    },
-    {
-      user: users[2]._id,
-      title: 'Project is complete',
-      description: 'Project is complete and BUG is fixed',
-      status: 'complete',
-    },
-  ]);
+    const users = await User.create([
+            {
+                username: 'Ivanov',
+                password: 'Ivanov_123#',
+                token: generatedTokenIvanov,
+            },
+            {
+                username: 'Petrov',
+                password: 'Petrov_123#',
+                token: generatedTokenPetrov,
+            },
+            {
+                username: 'Sidorov',
+                password: 'Sidorov_123#',
+                token: generatedTokenSidorov,
+            },
+        ]
+    );
 
-  await db.close();
+
+    await Task.create([
+        {
+            user: users[0]._id,
+            title: 'First project on JS',
+            description: 'Write first line code',
+            status: 'new',
+        },
+        {
+            user: users[1]._id,
+            title: 'BUG on Project',
+            description: 'First BUG try to solve',
+            status: 'in_progress',
+        },
+        {
+            user: users[2]._id,
+            title: 'Project "Hello World" on C#',
+            description: 'It s very ard project but i do that',
+            status: 'complete',
+        },
+    ]);
+
+    await db.close();
 };
 
 void run();
